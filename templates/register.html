@@ -1,0 +1,55 @@
+{{define "register"}}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 个人博客</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/login" class="logo">个人博客</a>
+            <div class="nav-links">
+                <a href="/login">登录</a>
+                <a href="/register">注册</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="auth-page">
+            <div class="auth-card">
+                <h2>注册</h2>
+                {{if .error}}
+                <div class="alert alert-error">{{.error}}</div>
+                {{end}}
+                <form action="/register" method="post">
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        <input type="text" id="username" name="username" value="{{.username}}" required autofocus>
+                    </div>
+                    <div class="form-group">
+                        <label for="nickname">昵称</label>
+                        <input type="text" id="nickname" name="nickname" value="{{.nickname}}" placeholder="选填，默认使用用户名">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">注册</button>
+                </form>
+                <p class="auth-link">已有账号？<a href="/login">去登录</a></p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 个人博客 - 使用 Go + Gin 构建</p>
+        </div>
+    </footer>
+</body>
+</html>
+{{end}}

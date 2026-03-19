@@ -1,0 +1,126 @@
+{{define "home"}}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页 - 个人博客</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">
+                <span class="logo-icon">✦</span> 个人博客
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-item active">首页</a>
+                <a href="/articles" class="nav-item">文章</a>
+                <a href="/articles/create" class="nav-item">写文章</a>
+                <a href="/profile" class="nav-item">个人信息</a>
+                <span class="welcome-badge">欢迎，{{.nickname}}</span>
+                <form action="/logout" method="post" style="display:inline">
+                    <button type="submit" class="btn-logout">退出</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="home-layout">
+
+            <!-- 左侧：个人信息面板 -->
+            {{template "sidebar" .}}
+
+            <!-- 右侧：照片展示区 -->
+            <section class="content-area">
+                <div class="section-header">
+                    <div class="section-title-wrap">
+                        <h2 class="section-main-title">📸 精彩瞬间</h2>
+                        <p class="section-subtitle">记录生活，捕捉美好</p>
+                    </div>
+                    {{if .isAdmin}}
+                    <button class="btn btn-primary btn-sm" onclick="document.getElementById('photo-management-modal').style.display='flex'">
+                        <span>🖼️</span> 管理照片
+                    </button>
+                    {{end}}
+                </div>
+
+                {{if .photos}}
+                <div class="photo-grid">
+                    {{range .photos}}
+                    <div class="photo-card">
+                        <div class="photo-wrapper">
+                            <img src="{{.URL}}" alt="{{.Title}}" class="gallery-img">
+                            <div class="photo-overlay">
+                                <h3 class="photo-title">{{.Title}}</h3>
+                                <p class="photo-desc">{{.Description}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {{end}}
+                </div>
+                {{else}}
+                <div class="empty-state">
+                    <div class="empty-icon">📷</div>
+                    <h3>还没有照片</h3>
+                    <p>去上传一些照片来丰富你的首页吧！</p>
+                </div>
+                {{end}}
+
+                {{if .isAdmin}}
+                <!-- 照片管理弹窗 -->
+                <div id="photo-management-modal" class="modal-overlay">
+                    <div class="modal-card">
+                        <div class="modal-header">
+                            <h3>管理照片墙</h3>
+                            <button class="btn-close" onclick="document.getElementById('photo-management-modal').style.display='none'">&times;</button>
+                        </div>
+                        <form action="/photos/update" method="post" class="photo-management-form">
+                            <div id="photo-inputs-container">
+                                {{range $index, $photo := .photos}}
+                                <div class="photo-input-group">
+                                    <input type="text" name="urls[]" value="{{$photo.URL}}" placeholder="图片 URL">
+                                    <input type="text" name="titles[]" value="{{$photo.Title}}" placeholder="标题">
+                                    <input type="text" name="descs[]" value="{{$photo.Description}}" placeholder="描述">
+                                    <button type="button" class="btn-remove-photo" onclick="this.parentElement.remove()">&times;</button>
+                                </div>
+                                {{end}}
+                            </div>
+                            <button type="button" class="btn btn-outline btn-block btn-sm" onclick="addPhotoInput()">+ 添加照片</button>
+                            <div class="modal-actions">
+                                <button type="submit" class="btn btn-primary">保存所有更改</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <script>
+                    function addPhotoInput() {
+                        const container = document.getElementById('photo-inputs-container');
+                        const div = document.createElement('div');
+                        div.className = 'photo-input-group';
+                        div.innerHTML = `
+                            <input type="text" name="urls[]" placeholder="图片 URL">
+                            <input type="text" name="titles[]" placeholder="标题">
+                            <input type="text" name="descs[]" placeholder="描述">
+                            <button type="button" class="btn-remove-photo" onclick="this.parentElement.remove()">&times;</button>
+                        `;
+                        container.appendChild(div);
+                    }
+                </script>
+                {{end}}
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 个人博客 · 使用 Go + Gin 构建 ✦</p>
+        </div>
+    </footer>
+</body>
+</html>
+{{end}}

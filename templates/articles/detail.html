@@ -1,0 +1,124 @@
+{{define "article-detail"}}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.title}} - 个人博客</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">
+                <span class="logo-icon">✦</span> 欢迎来到何时的个人博客
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-item">首页</a>
+                <a href="/articles" class="nav-item">文章</a>
+                <a href="/articles/create" class="nav-item">写文章</a>
+                <a href="/profile" class="nav-item">个人信息</a>
+                <span class="welcome-badge">欢迎，{{.nickname}}</span>
+                <form action="/logout" method="post" style="display:inline">
+                    <button type="submit" class="btn-logout">退出</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="home-layout">
+            <!-- 左侧：个人信息面板 -->
+            {{template "sidebar" .}}
+
+            <!-- 右侧：文章详情 -->
+            <section class="content-area">
+                <div class="article-detail">
+                    {{if .error}}
+                    <div class="empty-state">
+                        <div class="empty-icon">🔍</div>
+                        <h3>{{.error}}</h3>
+                        <a href="/articles" class="btn btn-primary">返回文章列表</a>
+                    </div>
+                    {{else}}
+                    <article>
+                        <header>
+                            <h1>{{.article.Title}}</h1>
+                            <div class="article-meta">
+                                <span class="meta-author">
+                                    <span class="meta-icon">👤</span> {{.article.User.Nickname}}
+                                </span>
+                                <span class="meta-date">
+                                    <span class="meta-icon">📅</span> {{.article.CreatedAt.Format "2006-01-02 15:04"}}
+                                </span>
+                            </div>
+                        </header>
+                        <div class="article-content">
+                            {{.content}}
+                        </div>
+                    </article>
+                    <div class="article-footer">
+                        <a href="/articles" class="btn btn-outline">返回文章列表</a>
+                        {{if or .isAdmin (eq .userID .article.UserID)}}
+                        <a href="/articles/edit/{{.article.ID}}" class="btn btn-primary">编辑文章</a>
+                        <form action="/articles/delete/{{.article.ID}}" method="post" style="display:inline;" onsubmit="return confirm('确定要删除这篇文章吗？');">
+                            <button type="submit" class="btn btn-danger">删除文章</button>
+                        </form>
+                        {{end}}
+                    </div>
+
+                    <!-- 评论区 -->
+                    <div class="comments-section">
+                        <h3 class="comments-title">评论 ({{len .comments}})</h3>
+                        
+                        <!-- 发表评论表单 -->
+                        <div class="comment-form-wrap">
+                            <form action="/comments/create" method="post" class="comment-form">
+                                <input type="hidden" name="article_id" value="{{.article.ID}}">
+                                <div class="form-group">
+                                    <textarea name="content" rows="3" placeholder="写下你的评论..." required></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary btn-sm">发表评论</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- 评论列表 -->
+                        <div class="comments-list">
+                            {{range .comments}}
+                            <div class="comment-item">
+                                <div class="comment-header">
+                                    <span class="comment-author">{{.User.Nickname}}</span>
+                                    <span class="comment-date">{{.CreatedAt.Format "2006-01-02 15:04"}}</span>
+                                    {{if or $.isAdmin (eq $.userID .UserID) (eq $.userID $.article.UserID)}}
+                                    <form action="/comments/delete/{{.ID}}" method="post" style="display:inline;" onsubmit="return confirm('确定要删除这条评论吗？');">
+                                        <button type="submit" class="btn-delete-comment">删除</button>
+                                    </form>
+                                    {{end}}
+                                </div>
+                                <div class="comment-content">
+                                    {{.Content}}
+                                </div>
+                            </div>
+                            {{else}}
+                            <p class="no-comments">暂无评论，快来抢沙发吧！</p>
+                            {{end}}
+                        </div>
+                    </div>
+                    {{end}}
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 个人博客 - 使用 Go + Gin 构建</p>
+        </div>
+    </footer>
+</body>
+</html>
+{{end}}

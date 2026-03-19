@@ -1,0 +1,96 @@
+{{define "profile"}}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编辑个人信息 - 个人博客</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">
+                <span class="logo-icon">✦</span> 个人博客
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-item">首页</a>
+                <a href="/articles" class="nav-item">文章</a>
+                <a href="/articles/create" class="nav-item">写文章</a>
+                <a href="/profile" class="nav-item active">个人信息</a>
+                <span class="welcome-badge">欢迎，{{.nickname}}</span>
+                <form action="/logout" method="post" style="display:inline">
+                    <button type="submit" class="btn-logout">退出</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="home-layout">
+            <!-- 左侧：个人信息面板 -->
+            {{template "sidebar" .}}
+
+            <!-- 右侧：编辑个人信息 -->
+            <section class="content-area">
+                <div class="profile-edit-page">
+                    <h2 class="section-main-title">{{if .isAdmin}}编辑个人信息{{else}}个人信息{{end}}</h2>
+                    <form action="/profile" method="post" class="profile-form">
+                        <div class="form-group">
+                            <label for="name">姓名</label>
+                            <input type="text" id="name" name="name" value="{{.profile.Name}}" {{if not .isAdmin}}disabled{{end}}>
+                        </div>
+                        <div class="form-group">
+                            <label for="nickname">昵称</label>
+                            <input type="text" id="nickname" name="nickname" value="{{.profile.Nickname}}" {{if not .isAdmin}}disabled{{end}}>
+                        </div>
+                        <div class="form-group">
+                            <label for="avatar">头像链接</label>
+                            <input type="text" id="avatar" name="avatar" value="{{.profile.Avatar}}" placeholder="图片URL" {{if not .isAdmin}}disabled{{end}}>
+                        </div>
+                        <div class="form-group">
+                            <label for="bio">个人简介</label>
+                            <textarea id="bio" name="bio" rows="3" {{if not .isAdmin}}disabled{{end}}>{{.profile.Bio}}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="skills">技能 <small>(用逗号分隔)</small></label>
+                            <input type="text" id="skills" name="skills" value="{{range $i, $s := .profile.Skills}}{{if $i}}, {{end}}{{$s}}{{end}}" placeholder="Go, Python, JavaScript" {{if not .isAdmin}}disabled{{end}}>
+                        </div>
+                        <div class="form-group">
+                            <label for="location">所在地</label>
+                            <input type="text" id="location" name="location" value="{{.profile.Location}}" {{if not .isAdmin}}disabled{{end}}>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">邮箱</label>
+                            <input type="email" id="email" name="email" value="{{.profile.Email}}" {{if not .isAdmin}}disabled{{end}}>
+                        </div>
+                        <div class="form-group">
+                            <label for="github">GitHub</label>
+                            <input type="text" id="github" name="github" value="{{.profile.GitHub}}" placeholder="https://github.com/username" {{if not .isAdmin}}disabled{{end}}>
+                        </div>
+                        <div class="form-group">
+                            <label for="blog">博客</label>
+                            <input type="text" id="blog" name="blog" value="{{.profile.Blog}}" placeholder="https://yourblog.com" {{if not .isAdmin}}disabled{{end}}>
+                        </div>
+                        <div class="form-actions">
+                            {{if .isAdmin}}
+                            <button type="submit" class="btn btn-primary">保存</button>
+                            {{end}}
+                            <a href="/" class="btn btn-outline">返回首页</a>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 何时个人博客 - 使用 Go + Gin 构建</p>
+        </div>
+    </footer>
+</body>
+</html>
+{{end}}

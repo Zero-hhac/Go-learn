@@ -1,0 +1,95 @@
+{{define "article-list"}}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章列表 - 个人博客</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">
+                <span class="logo-icon">✦</span> 欢迎来到何时的个人博客
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-item">首页</a>
+                <a href="/articles" class="nav-item active">文章</a>
+                <a href="/articles/create" class="nav-item">写文章</a>
+                <a href="/profile" class="nav-item">个人信息</a>
+                <span class="welcome-badge">欢迎，{{.nickname}}</span>
+                <form action="/logout" method="post" style="display:inline">
+                    <button type="submit" class="btn-logout">退出</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="home-layout">
+            <!-- 左侧：个人信息面板 -->
+            {{template "sidebar" .}}
+
+            <!-- 右侧：文章列表 -->
+            <section class="content-area">
+                <div class="articles-page">
+                    <div class="page-header">
+                        <h2 class="section-main-title">文章列表</h2>
+                        <a href="/articles/create" class="btn-write">
+                            <span>✍️</span> 写文章
+                        </a>
+                    </div>
+                    {{if .articles}}
+                    <div class="article-grid">
+                        {{range .articles}}
+                        <article class="article-card">
+                            <div class="card-accent"></div>
+                            <div class="card-body">
+                                <h3 class="article-title">
+                                    <a href="/articles/{{.ID}}">{{.Title}}</a>
+                                </h3>
+                                <div class="article-meta">
+                                    <span class="meta-author">
+                                        <span class="meta-icon">👤</span> {{.User.Nickname}}
+                                    </span>
+                                    <span class="meta-date">
+                                        <span class="meta-icon">📅</span> {{.CreatedAt.Format "2006-01-02 15:04"}}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <a href="/articles/{{.ID}}" class="read-more">阅读全文 →</a>
+                                {{if or $.isAdmin (eq $.userID .UserID)}}
+                                <a href="/articles/edit/{{.ID}}" class="btn-edit-link">编辑</a>
+                                <form action="/articles/delete/{{.ID}}" method="post" style="display:inline;" onsubmit="return confirm('确定要删除这篇文章吗？');">
+                                    <button type="submit" class="btn-delete-link">删除</button>
+                                </form>
+                                {{end}}
+                            </div>
+                        </article>
+                        {{end}}
+                    </div>
+                    {{else}}
+                    <div class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <h3>还没有文章</h3>
+                        <p>来写下你的第一篇文章吧！</p>
+                        <a href="/articles/create" class="btn btn-primary">写第一篇</a>
+                    </div>
+                    {{end}}
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 个人博客 - 使用 Go + Gin 构建</p>
+        </div>
+    </footer>
+</body>
+</html>
+{{end}}

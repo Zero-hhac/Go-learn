@@ -1,0 +1,89 @@
+{{define "sidebar"}}
+<aside class="sidebar">
+    <div class="profile-card">
+        <!-- 头像区域 -->
+        <div class="avatar-wrapper">
+            {{if .profile.Avatar}}
+            <img src="{{.profile.Avatar}}" alt="头像" class="avatar">
+            {{else}}
+            <div class="avatar-placeholder">{{printf "%.1s" (or .profile.Name "我")}}</div>
+            {{end}}
+            <div class="avatar-ring"></div>
+        </div>
+
+        <!-- 基本信息 -->
+        <div class="profile-info">
+            <h1 class="profile-name">{{or .profile.Name "个人博客"}}</h1>
+            {{if .profile.Nickname}}
+            <p class="profile-role">
+                <span class="role-badge">{{.profile.Nickname}}</span>
+            </p>
+            {{end}}
+            {{if .profile.Bio}}
+            <p class="profile-bio">{{.profile.Bio}}</p>
+            {{end}}
+            {{if .profile.Location}}
+            <p class="profile-location">
+                <span class="location-icon">📍</span> {{.profile.Location}}
+            </p>
+            {{end}}
+        </div>
+
+        <!-- 分割线 -->
+        <div class="divider"></div>
+
+        <!-- 技能区域 -->
+        {{if .profile.Skills}}
+        <div class="skills-section">
+            <h3 class="section-title">
+                <span class="title-icon">⚡</span> 技能栈
+            </h3>
+            <div class="skill-grid">
+                {{range .profile.Skills}}
+                <div class="skill-item">
+                    <span class="skill-dot"></span>
+                    {{.}}
+                </div>
+                {{end}}
+            </div>
+        </div>
+        <div class="divider"></div>
+        {{end}}
+
+        <!-- 联系方式 -->
+        {{if or .profile.Email .profile.GitHub .profile.Blog}}
+        <div class="contact-section">
+            <h3 class="section-title">
+                <span class="title-icon">🔗</span> 联系我
+            </h3>
+            <div class="contact-links">
+                {{if .profile.Email}}
+                <a href="mailto:{{.profile.Email}}" class="contact-item">
+                    <span class="contact-icon">✉️</span>
+                    <span>{{.profile.Email}}</span>
+                </a>
+                {{end}}
+                {{if .profile.GitHub}}
+                <a href="{{.profile.GitHub}}" target="_blank" class="contact-item">
+                    <span class="contact-icon">🐙</span>
+                    <span>GitHub</span>
+                </a>
+                {{end}}
+                {{if .profile.Blog}}
+                <a href="{{.profile.Blog}}" target="_blank" class="contact-item">
+                    <span class="contact-icon">🌐</span>
+                    <span>个人网站</span>
+                </a>
+                {{end}}
+            </div>
+        </div>
+        <div class="divider"></div>
+        {{end}}
+
+        <!-- 编辑按钮 -->
+        <a href="/profile" class="btn-edit">
+            <span>{{if .isAdmin}}✏️ 编辑个人信息{{else}}👤 查看个人信息{{end}}</span>
+        </a>
+    </div>
+</aside>
+{{end}}
