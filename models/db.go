@@ -22,14 +22,20 @@ func InitDB() {
 		if strings.HasPrefix(dbUrl, "postgres://") || strings.HasPrefix(dbUrl, "postgresql://") {
 			// 连接到 PostgreSQL (例如 Neon)
 			DB, err = gorm.Open(postgres.Open(dbUrl), &gorm.Config{})
-			if err == nil {
-				log.Println("Connected to PostgreSQL database")
+			if err != nil {
+				log.Printf("Attempted PostgreSQL connection but failed: %v", err)
+				DB = nil // 确保失败后进入下一个判断
+			} else {
+				log.Println("Successfully connected to PostgreSQL database")
 			}
 		} else {
 			// 尝试作为 MySQL 连接字符串 (DSN)
 			DB, err = gorm.Open(mysql.Open(dbUrl), &gorm.Config{})
-			if err == nil {
-				log.Println("Connected to MySQL database via DATABASE_URL")
+			if err != nil {
+				log.Printf("Attempted MySQL (via URL) connection but failed: %v", err)
+				DB = nil
+			} else {
+				log.Println("Successfully connected to MySQL database via DATABASE_URL")
 			}
 		}
 	}
@@ -51,5 +57,5 @@ func InitDB() {
 	}
 
 	// 自动迁移表结构
-	DB.AutoMigrate(&User{}, &Article{}, &Comment{})
+	DB.AutoMigrate(&User{}, &Article{}, &Comment{}, &Profile{}, &Photo{})
 }
