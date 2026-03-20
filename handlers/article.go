@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -25,11 +26,27 @@ func ArticleList(c *gin.Context) {
 	c.HTML(http.StatusOK, "article-list", gin.H{
 		"title":    "文章列表",
 		"articles": articles,
-		"profile":  profile,
+		"profile": gin.H{
+			"Name":     profile.Name,
+			"Nickname": profile.Nickname,
+			"Avatar":   profile.Avatar,
+			"Bio":      profile.Bio,
+			"Skills":   getSkills(profile),
+			"Email":    profile.Email,
+			"GitHub":   profile.GitHub,
+			"Blog":     profile.Blog,
+			"Location": profile.Location,
+		},
 		"nickname": nickname,
 		"isAdmin":  nickname == "admin",
 		"userID":   uint(userID),
 	})
+}
+
+func getSkills(p models.Profile) []string {
+	var skills []string
+	json.Unmarshal([]byte(p.Skills), &skills)
+	return skills
 }
 
 // ArticleDetail 文章详情
@@ -65,7 +82,17 @@ func ArticleDetail(c *gin.Context) {
 		"article":  article,
 		"content":  template.HTML(mdHTML),
 		"comments": comments,
-		"profile":  profile,
+		"profile": gin.H{
+			"Name":     profile.Name,
+			"Nickname": profile.Nickname,
+			"Avatar":   profile.Avatar,
+			"Bio":      profile.Bio,
+			"Skills":   getSkills(profile),
+			"Email":    profile.Email,
+			"GitHub":   profile.GitHub,
+			"Blog":     profile.Blog,
+			"Location": profile.Location,
+		},
 		"nickname": nickname,
 		"isAdmin":  nickname == "admin",
 		"userID":   uint(userID),
@@ -77,8 +104,18 @@ func ShowCreateArticle(c *gin.Context) {
 	profile := LoadProfile()
 	nickname, _ := c.Cookie("nickname")
 	c.HTML(http.StatusOK, "article-create", gin.H{
-		"title":    "写文章",
-		"profile":  profile,
+		"title": "写文章",
+		"profile": gin.H{
+			"Name":     profile.Name,
+			"Nickname": profile.Nickname,
+			"Avatar":   profile.Avatar,
+			"Bio":      profile.Bio,
+			"Skills":   getSkills(profile),
+			"Email":    profile.Email,
+			"GitHub":   profile.GitHub,
+			"Blog":     profile.Blog,
+			"Location": profile.Location,
+		},
 		"nickname": nickname,
 	})
 }
@@ -92,11 +129,21 @@ func CreateArticle(c *gin.Context) {
 		profile := LoadProfile()
 		nickname, _ := c.Cookie("nickname")
 		c.HTML(http.StatusOK, "article-create", gin.H{
-			"title":    "写文章",
-			"error":    "标题和内容不能为空",
-			"atitle":   title,
-			"content":  content,
-			"profile":  profile,
+			"title": "写文章",
+			"error": "标题和内容不能为空",
+			"atitle": title,
+			"content": content,
+			"profile": gin.H{
+				"Name":     profile.Name,
+				"Nickname": profile.Nickname,
+				"Avatar":   profile.Avatar,
+				"Bio":      profile.Bio,
+				"Skills":   getSkills(profile),
+				"Email":    profile.Email,
+				"GitHub":   profile.GitHub,
+				"Blog":     profile.Blog,
+				"Location": profile.Location,
+			},
 			"nickname": nickname,
 		})
 		return
@@ -115,11 +162,21 @@ func CreateArticle(c *gin.Context) {
 		profile := LoadProfile()
 		nickname, _ := c.Cookie("nickname")
 		c.HTML(http.StatusOK, "article-create", gin.H{
-			"title":    "写文章",
-			"error":    "发布失败，请重试",
-			"atitle":   title,
-			"content":  content,
-			"profile":  profile,
+			"title": "写文章",
+			"error": "发布失败，请重试",
+			"atitle": title,
+			"content": content,
+			"profile": gin.H{
+				"Name":     profile.Name,
+				"Nickname": profile.Nickname,
+				"Avatar":   profile.Avatar,
+				"Bio":      profile.Bio,
+				"Skills":   getSkills(profile),
+				"Email":    profile.Email,
+				"GitHub":   profile.GitHub,
+				"Blog":     profile.Blog,
+				"Location": profile.Location,
+			},
 			"nickname": nickname,
 		})
 		return
@@ -226,9 +283,19 @@ func ShowEditArticle(c *gin.Context) {
 
 	profile := LoadProfile()
 	c.HTML(http.StatusOK, "article-edit", gin.H{
-		"title":    "编辑文章",
-		"article":  article,
-		"profile":  profile,
+		"title": "编辑文章",
+		"article": article,
+		"profile": gin.H{
+			"Name":     profile.Name,
+			"Nickname": profile.Nickname,
+			"Avatar":   profile.Avatar,
+			"Bio":      profile.Bio,
+			"Skills":   getSkills(profile),
+			"Email":    profile.Email,
+			"GitHub":   profile.GitHub,
+			"Blog":     profile.Blog,
+			"Location": profile.Location,
+		},
 		"nickname": nickname,
 	})
 }
@@ -258,10 +325,20 @@ func UpdateArticle(c *gin.Context) {
 	if title == "" || content == "" {
 		profile := LoadProfile()
 		c.HTML(http.StatusOK, "article-edit", gin.H{
-			"title":    "编辑文章",
-			"error":    "标题和内容不能为空",
-			"article":  article,
-			"profile":  profile,
+			"title": "编辑文章",
+			"error": "标题和内容不能为空",
+			"article": article,
+			"profile": gin.H{
+				"Name":     profile.Name,
+				"Nickname": profile.Nickname,
+				"Avatar":   profile.Avatar,
+				"Bio":      profile.Bio,
+				"Skills":   getSkills(profile),
+				"Email":    profile.Email,
+				"GitHub":   profile.GitHub,
+				"Blog":     profile.Blog,
+				"Location": profile.Location,
+			},
 			"nickname": nickname,
 		})
 		return
