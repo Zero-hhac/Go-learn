@@ -27,3 +27,4 @@
 # Project specific
 main
 .claude/
+.env
