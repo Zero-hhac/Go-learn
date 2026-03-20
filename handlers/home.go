@@ -58,8 +58,8 @@ func LoadProfile() models.Profile {
 
 func LoadPhotos() []models.Photo {
 	var photos []models.Photo
-	// 查找未被软删除的所有照片
-	if err := models.DB.Order("`order` asc, created_at desc").Find(&photos).Error; err != nil {
+	// 查找所有照片（使用 Unscoped 排除软删除干扰进行调试，或者确保 Find 正常）
+	if err := models.DB.Order("\"order\" asc, created_at desc").Find(&photos).Error; err != nil {
 		return []models.Photo{}
 	}
 
