@@ -58,8 +58,13 @@ func LoadProfile() models.Profile {
 
 func LoadPhotos() []models.Photo {
 	var photos []models.Photo
-	if err := models.DB.Order("`order` asc, created_at desc").Find(&photos).Error; err != nil || len(photos) == 0 {
-		// 如果数据库中没有，尝试从 JSON 加载并同步到数据库
+	// 查找未被软删除的所有照片
+	if err := models.DB.Order("`order` asc, created_at desc").Find(&photos).Error; err != nil {
+		return []models.Photo{}
+	}
+
+	// 如果数据库中没有任何照片（说明是第一次运行），尝试从 JSON 加载并同步到数据库
+	if len(photos) == 0 {
 		data, err := os.ReadFile(config.PhotosPath)
 		if err == nil {
 			var temp []struct {
